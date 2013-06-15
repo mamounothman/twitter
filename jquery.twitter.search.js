@@ -22,11 +22,6 @@
 			opts.formatter = opts.formatter || $.fn.twitterSearch.formatter; 
 			opts.filter = opts.filter || $.fn.twitterSearch.filter;
 			
-			if (!opts.applyStyles) { // throw away all style defs
-				for (var css in opts.css)
-					opts.css[css] = {};
-			}
-			
 			if (opts.title === null) // user can set to '' to suppress title
 				opts.title = opts.term;
 
@@ -67,7 +62,8 @@
 				grabFlag = false;
 				grabbing = true;
 				// grab twitter stream
-				$.getJSONP({
+
+				$.ajax({
 					url: url,
 					timeout: 30000,
 					error: function(xhr, status, e) {
@@ -85,14 +81,11 @@
 						}
 						$cont.fadeOut('fast',function() {
 							$cont.empty();
-							
 							// iterate twitter results 
-							$.each(json.results, function(i) {
+							$.each(json, function(i) {
 								if (!opts.filter.call(opts, this))
 									return; // skip this tweet
-								var $img, $text, w,
-									tweet = opts.formatter(this, opts), 
-									$tweet = $(tweet);
+								var $img, $text, w, tweet = opts.formatter(this, opts), $tweet = $(tweet);
 								$tweet.css(opts.css['tweet']);
 								$img = $tweet.find('.twitterSearchProfileImg').css(opts.css['img']);
 								$tweet.find('.twitterSearchUser').css(opts.css['user']);
@@ -108,7 +101,7 @@
 							
 							$cont.fadeIn('fast');
 						
-							if (json.results.length < 2) {
+							if (json.length < 2) {
 								if (opts.refreshSeconds)
 									setTimeout(grabTweets, opts.refreshSeconds * 1000);
 								return;
@@ -140,12 +133,7 @@
 					h = $el.outerHeight();
 					$el.animate({ marginTop: -h }, opts.animInSpeed, function() {
 						$el.css({ marginTop: 0,	opacity: 1 });
-						/*@cc_on
-						try { el.style.removeAttribute('filter'); } // ie cleartype fix
-						catch(smother) {}
-						@*/
 						$el.css(opts.css['tweet']).show().appendTo($cont);
-						
 						setTimeout(grabFlag ? grabTweets : go, opts.timeout);					
 					});
 				});
@@ -166,9 +154,9 @@
 		}
 		str = '<div class="twitterSearchTweet">';
 		if (opts.avatar)
-			str += '<img class="twitterSearchProfileImg" src="' + json.profile_image_url + '" />';
-		str += '<div><span class="twitterSearchUser"><a href="http://www.twitter.com/'+ json.from_user+'/status/'+ json.id_str +'">' 
-		  + json.from_user + '</a></span>';
+			str += '<img class="twitterSearchProfileImg" src="' + json.user.profile_image_url + '" />';
+		str += '<div><span class="twitterSearchUser"><a href="http://www.twitter.com/'+ json.user.screen_name+'/status/'+ json.user.id_str +'">' 
+		  + json.user.screen_name + '</a></span>';
 		pretty = prettyDate(json.created_at);
 		if (opts.time && pretty)
 			str += ' <span class="twitterSearchTime">('+ pretty +')</span>'
@@ -177,7 +165,7 @@
 	};
 	
 	$.fn.twitterSearch.defaults = {
-		url: 'http://search.twitter.com/search.json?callback=?&q=',
+		url : 'https://api.twitter.com/1.1/search/tweets.json',
 		anchors: true,				// true or false (enable embedded links in tweets)
 		animOutSpeed: 500,			// speed of animation for top tweet when removed
 		animInSpeed: 500,			// speed of scroll animation for moving tweets up
@@ -215,49 +203,6 @@
 			user:  { fontWeight: 'bold' }
 		}
 	};
-
-    // fn to handle jsonp with timeouts and errors
-    // hat tip to Ricardo Tomasi for the timeout logic
-    $.getJSONP = function(s) {
-        s.dataType = 'jsonp';
-        $.ajax(s);
-
-        // figure out what the callback fn is
-        var $script = $(document.getElementsByTagName('head')[0].firstChild);
-        var url = $script.attr('src') || '';
-        var cb = (url.match(/callback=(\w+)/)||[])[1];
-        if (!cb)
-            return; // bail
-        var t = 0, cbFn = window[cb];
-
-        $script[0].onerror = function(e) {
-            $script.remove();
-            handleError(s, {}, "error", e);
-            clearTimeout(t);
-        };
-
-        if (!s.timeout)
-            return;
-
-        window[cb] = function(json) {
-            clearTimeout(t);
-            cbFn(json);
-            cbFn = null;
-        };
-
-        t = setTimeout(function() {
-            $script.remove();
-            handleError(s, {}, "timeout");
-            if (cbFn)
-                window[cb] = function(){};
-        }, s.timeout);
-        
-        function handleError(s, xhr, msg, e) {
-			s.error && s.error.call(s.context, xhr, msg, e);
-			s.global && $.event.trigger("ajaxError", [xhr, s, e || msg]);
-			s.complete && s.complete.call(s.context, xhr, e || msg);
-        }
-    };
 	
 	/*
 	 * JavaScript Pretty Date
