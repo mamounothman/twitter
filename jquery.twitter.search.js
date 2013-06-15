@@ -189,7 +189,7 @@
 		css: {
 			// default styling
 			a:     { textDecoration: 'none', color: '#3B5998' },
-			bird:  { width: '50px', height: '20px', position: 'absolute', left: '-20px', top: '-10px', border: 'none' },
+			bird:  { width: '50px', height: '20px', position: 'absolute', left: '-30px', top: '-20px', border: 'none' },
 			container: { overflow: 'hidden', backgroundColor: '#eee', height: '100%' },
 			fail:  { background: '#6cc5c3 url(http://cloud.github.com/downloads/malsup/twitter/failwhale.png) no-repeat 50% 50%', height: '100%', padding: '10px' },
 			frame: { border: '10px solid #C2CFF1', borderRadius: '10px', '-moz-border-radius': '10px', '-webkit-border-radius': '10px' },
@@ -198,7 +198,7 @@
 			loading: { padding: '20px', textAlign: 'center', color: '#888' },
 			text:  {},
 			time:  { fontSize: 'smaller', color: '#888' },
-			title: { backgroundColor: '#C2CFF1', margin: 0, padding: '0 0 5px 0', textAlign: 'center', fontWeight: 'bold', fontSize: 'large' },
+			title: { backgroundColor: '#C2CFF1', margin: 0, padding: '0 0 5px 0', textAlign: 'center', fontWeight: 'bold', fontSize: 'large', position: 'relative'},
 			titleLink: { textDecoration: 'none', color: '#3B5998' },
 			user:  { fontWeight: 'bold' }
 		}
