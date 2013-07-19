@@ -75,6 +75,9 @@
 							setTimeout(regrab, opts.refreshSeconds * 1000);
 					},
 					success: function(json) {
+						if($().jquery == '1.2.6') {
+							json = JSON.parse(json);
+						}
 						if (json.error) {
 							failWhale(json.error);
 							return;
