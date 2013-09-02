@@ -189,7 +189,22 @@
 		timeout: 4000,				// delay betweet tweet scroll
 		title: null,				// title text to display when frame option is true (default = 'term' text)
 		titleLink: null,			// url for title link
-		css: {}
+		css: {
+			// default styling
+			a:     {},
+			bird:  {},
+			container: {},
+			fail:  {},
+			frame: {},
+			tweet: {},
+			img:   {},
+			loading: {},
+			text:  {},
+			time:  {},
+			title: {},
+			titleLink: {},
+			user:  {}
+		}
 	};
 	
 	/*
